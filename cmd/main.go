@@ -15,12 +15,24 @@ var upgrader = websocket.Upgrader{
 }
 
 func serveWs(hub *chat.Hub, w http.ResponseWriter, r *http.Request) {
+
+	room := r.URL.Query().Get("room") // Obtener el nombre de la sala desde la query
+	if room == "" {
+		http.Error(w, "Room name is required", http.StatusBadRequest)
+		return
+	}
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("upgrade error:", err)
 		return
 	}
-	client := &chat.Client{Hub: hub, Conn: conn, Send: make(chan []byte, 256)}
+	client := &chat.Client{
+		Hub:  hub,
+		Conn: conn,
+		Send: make(chan []byte, 256),
+		Room: room,
+	}
 	hub.Register <- client
 
 	go client.WritePump()

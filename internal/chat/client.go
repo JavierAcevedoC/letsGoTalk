@@ -16,6 +16,7 @@ const (
 
 type Client struct {
 	Hub  *Hub
+	Room string
 	Conn *websocket.Conn
 	Send chan []byte
 }
@@ -44,12 +45,10 @@ func (client *Client) ReadPump() {
 			log.Println("error parsing message:", err)
 			continue
 		}
+		msg.Room = client.Room
 
-		log.Printf("New message from %s: %s", msg.Username, msg.Content)
-
-		// Opcional: Reenviar a todos en la misma sala (si usas salas)
-		// Aquí simplificamos y difundimos el mensaje a todos los clientes.
-		client.Hub.Broadcast <- rawMessage
+		log.Printf("Roompompopooom: %s - New message from %s: %s", msg.Room, msg.Username, msg.Content)
+		client.Hub.Broadcast <- msg
 	}
 }
 

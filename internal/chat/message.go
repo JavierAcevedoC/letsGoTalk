@@ -23,10 +23,7 @@ func ParseMessage(jsonData []byte) (*Message, error) {
 }
 
 // Serialize convierte un objeto Message a JSON.
-func (m *Message) Serialize() ([]byte, error) {
-	jsonData, err := json.Marshal(m)
-	if err != nil {
-		return nil, fmt.Errorf("error serializing message: %v", err)
-	}
-	return jsonData, nil
+func (m *Message) Serialize() []byte {
+	jsonData, _ := json.Marshal(m)
+	return jsonData
 }
