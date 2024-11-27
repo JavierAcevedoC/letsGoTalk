@@ -12,7 +12,7 @@ type Storage struct {
 }
 
 func NewStorage(databasePath string) (*Storage, error) {
-	db, err := sql.Open("rooms", databasePath)
+	db, err := sql.Open("sqlite", databasePath)
 	if err != nil {
 		return nil, fmt.Errorf("error opening database: %v", err)
 	}
