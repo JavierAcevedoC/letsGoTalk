@@ -8,16 +8,18 @@ type Hub struct {
 	Broadcast  chan *Message
 	Register   chan *Client
 	Unregister chan *Client
+	Storage    *Storage
 	mu         sync.Mutex
 }
 
 // NewHub crea una nueva instancia de Hub.
-func NewHub() *Hub {
+func NewHub(storage *Storage) *Hub {
 	return &Hub{
 		Rooms:      make(map[string]map[*Client]bool),
 		Broadcast:  make(chan *Message),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
+		Storage:    storage,
 	}
 }
 
@@ -49,7 +51,10 @@ func (h *Hub) Run() {
 			h.mu.Unlock()
 
 		case message := <-h.Broadcast:
+
+			h.Storage.SaveMessage(message)
 			h.mu.Lock()
+
 			if clients, ok := h.Rooms[message.Room]; ok {
 				for client := range clients {
 					select {
